@@ -87,6 +87,17 @@ interface IManager {
 	public function moveShare(IShare $share, $recipientId);
 
 	/**
+	 * Get all shares shared by (initiated) by the provided user in a folder.
+	 *
+	 * @param string $userId
+	 * @param Node|null $node
+	 * @param bool $reshares
+	 * @return IShare[]
+	 * @since 9.1.0
+	 */
+	public function getSharesInFolder($userId, Node $node, $reshares = false);
+
+	/**
 	 * Get shares shared by (initiated) by the provided user.
 	 *
 	 * @param string $userId
