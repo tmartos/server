@@ -97,7 +97,7 @@ interface IShareProvider {
 	 * @param Node|null $node
 	 * @param bool $reshares Also get the shares where $user is the owner instead of just the shares where $user is the initiator
 	 * @return \OCP\Share\IShare[]
-	 * @since 9.0.0
+	 * @since 9.1.0
 	 */
 	public function getSharesInFolder($userId, $node, $reshares);
 
