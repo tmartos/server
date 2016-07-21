@@ -113,6 +113,7 @@ abstract class AbstractDatabase {
 			'user' => $this->dbUser,
 			'password' => $this->dbPassword,
 			'tablePrefix' => $this->tablePrefix,
+			'dbname' => $this->dbName
 		);
 
 		// adding port support through installer
