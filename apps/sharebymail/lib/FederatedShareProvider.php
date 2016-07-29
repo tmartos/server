@@ -33,8 +33,6 @@ use OCP\Share\IShareProvider;
  */
 class ShareByMailProvider implements IShareProvider {
 
-	const SHARE_TYPE_MAIL = Share::SHARE_TYPE_EMAIL;
-
 	/**
 	 * Return the identifier of this provider.
 	 *
@@ -55,15 +53,9 @@ class ShareByMailProvider implements IShareProvider {
 	public function create(IShare $share) {
 
 		$shareWith = $share->getSharedWith();
-		$itemSource = $share->getNodeId();
-		$itemType = $share->getNodeType();
-		$permissions = $share->getPermissions();
-		$sharedBy = $share->getSharedBy();
 
-		/*
-		 * Check if file is not already shared with the remote user
-		 */
-		$alreadyShared = $this->getSharedWith($shareWith, self::SHARE_TYPE_REMOTE, $share->getNode(), 1, 0);
+		// Check if file is not already shared with the same email address
+		$alreadyShared = $this->getSharedWith($shareWith, Share::SHARE_TYPE_EMAIL, $share->getNode(), 1, 0);
 		if (!empty($alreadyShared)) {
 			$message = 'Sharing %s failed, because this item is already shared with %s';
 			$message_t = $this->l->t('Sharing %s failed, because this item is already shared with %s', array($share->getNode()->getName(), $shareWith));
@@ -71,55 +63,15 @@ class ShareByMailProvider implements IShareProvider {
 			throw new \Exception($message_t);
 		}
 
-
-		// don't allow federated shares if source and target server are the same
-		list($user, $remote) = $this->addressHandler->splitUserRemote($shareWith);
-		$currentServer = $this->addressHandler->generateRemoteURL();
-		$currentUser = $sharedBy;
-		if ($this->addressHandler->compareAddresses($user, $remote, $currentUser, $currentServer)) {
-			$message = 'Not allowed to create a federated share with the same user.';
-			$message_t = $this->l->t('Not allowed to create a federated share with the same user');
-			$this->logger->debug($message, ['app' => 'Federated File Sharing']);
-			throw new \Exception($message_t);
-		}
-
-		$share->setSharedWith($user . '@' . $remote);
-
-		try {
-			$remoteShare = $this->getShareFromExternalShareTable($share);
-		} catch (ShareNotFound $e) {
-			$remoteShare = null;
-		}
-
-		if ($remoteShare) {
-			try {
-				$uidOwner = $remoteShare['owner'] . '@' . $remoteShare['remote'];
-				$shareId = $this->addShareToDB($itemSource, $itemType, $shareWith, $sharedBy, $uidOwner, $permissions, 'tmp_token_' . time());
-				$share->setId($shareId);
-				list($token, $remoteId) = $this->askOwnerToReShare($shareWith, $share, $shareId);
-				// remote share was create successfully if we get a valid token as return
-				$send = is_string($token) && $token !== '';
-			} catch (\Exception $e) {
-				// fall back to old re-share behavior if the remote server
-				// doesn't support flat re-shares (was introduced with Nextcloud 9.1)
-				$this->removeShareFromTable($share);
-				$shareId = $this->createFederatedShare($share);
-			}
-			if ($send) {
-				$this->updateSuccessfulReshare($shareId, $token);
-				$this->storeRemoteId($shareId, $remoteId);
-			} else {
-				$this->removeShareFromTable($share);
-				$message_t = $this->l->t('File is already shared with %s', [$shareWith]);
-				throw new \Exception($message_t);
-			}
-
-		} else {
-			$shareId = $this->createFederatedShare($share);
-		}
+		//send share by email
+		$shareId = $this->createShareByMail($share);
 
 		$data = $this->getRawShare($shareId);
 		return $this->createShareObject($data);
+	}
+
+	private function createShareByMail(IShare $share) {
+		
 	}
 
 	/**
@@ -523,6 +475,32 @@ class ShareByMailProvider implements IShareProvider {
 	 */
 	public function userDeletedFromGroup($uid, $gid) {
 		return;
+	}
+
+	/**
+	 * get database row of a give share
+	 *
+	 * @param $id
+	 * @return array
+	 * @throws ShareNotFound
+	 */
+	private function getRawShare($id) {
+
+		// Now fetch the inserted share and create a complete share object
+		$qb = $this->dbConnection->getQueryBuilder();
+		$qb->select('*')
+			->from('share')
+			->where($qb->expr()->eq('id', $qb->createNamedParameter($id)));
+
+		$cursor = $qb->execute();
+		$data = $cursor->fetch();
+		$cursor->closeCursor();
+
+		if ($data === false) {
+			throw new ShareNotFound;
+		}
+
+		return $data;
 	}
 
 }
