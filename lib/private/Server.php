@@ -66,6 +66,7 @@ use OC\IntegrityCheck\Helpers\FileAccessHelper;
 use OC\Lock\DBLockingProvider;
 use OC\Lock\MemcacheLockingProvider;
 use OC\Lock\NoopLockingProvider;
+use OC\Lockdown\LockdownManager;
 use OC\Mail\Mailer;
 use OC\Memcache\ArrayCache;
 use OC\Notification\Manager;
@@ -721,6 +722,9 @@ class Server extends ServerContainer implements IServerContainer {
 			);
 
 			return $manager;
+		});
+		$this->registerService('LockdownManager', function (Server $c) {
+			return new LockdownManager();
 		});
 	}
 
@@ -1424,5 +1428,12 @@ class Server extends ServerContainer implements IServerContainer {
 	 */
 	public function getLDAPProvider() {
 		return $this->query('LDAPProvider');
+	}
+
+	/**
+	 * @return \OCP\Lockdown\ILockdownManager
+	 */
+	public function getLockdownManager() {
+		return $this->query('LockdownManager');
 	}
 }
