@@ -80,6 +80,11 @@ class DefaultToken extends Entity implements IToken {
 	 */
 	protected $lastCheck;
 
+	/**
+	 * @var string
+	 */
+	protected $scope;
+
 	public function getId() {
 		return $this->id;
 	}
@@ -112,6 +117,7 @@ class DefaultToken extends Entity implements IToken {
 			'name' => $this->name,
 			'lastActivity' => $this->lastActivity,
 			'type' => $this->type,
+			'scope' => $this->getScope()
 		];
 	}
 
@@ -133,4 +139,11 @@ class DefaultToken extends Entity implements IToken {
 		return parent::setLastCheck($time);
 	}
 
+	public function getScope() {
+		return json_decode(parent::getScope(), true);
+	}
+
+	public function setScope($scope) {
+		return parent::setScope(json_encode($scope));
+	}
 }
