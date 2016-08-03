@@ -117,7 +117,7 @@ class DefaultToken extends Entity implements IToken {
 			'name' => $this->name,
 			'lastActivity' => $this->lastActivity,
 			'type' => $this->type,
-			'scope' => $this->getScope()
+			'scope' => $this->getScopeAsArray()
 		];
 	}
 
@@ -140,7 +140,18 @@ class DefaultToken extends Entity implements IToken {
 	}
 
 	public function getScope() {
-		return json_decode(parent::getScope(), true);
+		return parent::getScope();
+	}
+
+	public function getScopeAsArray() {
+		$scope = json_decode($this->getScope(), true);
+		if (!$scope) {
+			return [
+				'filesystem'=> true,
+				'apps' => []
+			];
+		}
+		return $scope;
 	}
 
 	public function setScope($scope) {

@@ -137,7 +137,7 @@ class DefaultTokenProvider implements IProvider {
 	}
 
 	/**
-	 * Get a token by token id
+	 * Get a token by token
 	 *
 	 * @param string $tokenId
 	 * @throws InvalidTokenException
@@ -146,6 +146,21 @@ class DefaultTokenProvider implements IProvider {
 	public function getToken($tokenId) {
 		try {
 			return $this->mapper->getToken($this->hashToken($tokenId));
+		} catch (DoesNotExistException $ex) {
+			throw new InvalidTokenException();
+		}
+	}
+
+	/**
+	 * Get a token by token id
+	 *
+	 * @param string $tokenId
+	 * @throws InvalidTokenException
+	 * @return DefaultToken
+	 */
+	public function getTokenById($tokenId) {
+		try {
+			return $this->mapper->getTokenById($tokenId);
 		} catch (DoesNotExistException $ex) {
 			throw new InvalidTokenException();
 		}

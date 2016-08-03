@@ -48,7 +48,16 @@ interface IProvider {
 	 * @throws InvalidTokenException
 	 * @return IToken
 	 */
-	public function getToken($tokenId) ;
+	public function getToken($tokenId);
+
+	/**
+	 * Get a token by token id
+	 *
+	 * @param string $tokenId
+	 * @throws InvalidTokenException
+	 * @return DefaultToken
+	 */
+	public function getTokenById($tokenId);
 
 	/**
 	 * Invalidate (delete) the given session token

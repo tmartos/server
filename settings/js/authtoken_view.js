@@ -27,7 +27,13 @@
 
 	var TEMPLATE_TOKEN =
 		'<tr data-id="{{id}}">'
-		+ '<td class="has-tooltip" title="{{title}}"><span class="token-name">{{name}}</span></td>'
+		+ '<td class="has-tooltip" title="{{title}}">'
+		+ '<span class="token-name">{{name}}</span>'
+		+ '<div class="configure">'
+		+ '<input class="filesystem checkbox" type="checkbox" id="{{id}}_filesystem" {{#if scope.filesystem}}checked{{/if}}/>'
+		+ '<label for="{{id}}_filesystem">' + t('core', 'Allow filesystem access') + '</label><br/>'
+		+ '</div>'
+		+ '</td>'
 		+ '<td><span class="last-activity has-tooltip" title="{{lastActivityTime}}">{{lastActivity}}</span></td>'
 		+ '<td class="icon">'
 		+ '{{#if canScope}}'
@@ -209,6 +215,8 @@
 
 				var $el = $(el);
 				$el.on('click', 'a.icon-delete', _.bind(_this._onDeleteToken, _this));
+				$el.on('click', 'a.icon-settings', _.bind(_this._onConfigureToken, _this));
+				$el.on('change', 'input.filesystem', _.bind(_this._onSetTokenScope, _this));
 			});
 
 			this._form = $('#app-password-form');
@@ -295,6 +303,13 @@
 			this._addAppPasswordBtn.toggleClass('icon-loading-small', state);
 		},
 
+		_onConfigureToken: function (event) {
+			var $target = $(event.target);
+			var $row = $target.closest('tr');
+			$row.toggleClass('active');
+			var id = $row.data('id');
+		},
+
 		_onDeleteToken: function (event) {
 			var $target = $(event.target);
 			var $row = $target.closest('tr');
@@ -317,6 +332,26 @@
 			$.when(destroyingToken).always(function () {
 				_this.render();
 			});
+		},
+
+		_onSetTokenScope: function (event) {
+			var $target = $(event.target);
+			console.log($target);
+			var $row = $target.closest('tr');
+			var id = $row.data('id');
+
+			var token = this.collection.get(id);
+			if (_.isUndefined(token)) {
+				// Ignore event
+				return;
+			}
+
+			var scope = token.get('scope');
+			scope.filesystem = $target.is(":checked");
+			console.log(scope);
+
+			token.set('scope', scope);
+			token.save();
 		},
 
 		_toggleFormResult: function (showForm) {
