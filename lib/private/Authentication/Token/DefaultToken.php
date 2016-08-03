@@ -115,8 +115,8 @@ class DefaultToken extends Entity implements IToken {
 		return [
 			'id' => $this->id,
 			'name' => $this->name,
-			'lastActivity' => $this->lastActivity,
-			'type' => $this->type,
+			'lastActivity' => (int)$this->lastActivity,
+			'type' => (int)$this->type,
 			'scope' => $this->getScopeAsArray()
 		];
 	}
