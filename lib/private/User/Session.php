@@ -609,7 +609,6 @@ class Session implements IUserSession, Emitter {
 			return false;
 		}
 		$dbToken->setLastCheck($now);
-		$this->tokenProvider->updateToken($dbToken);
 		return true;
 	}
 

@@ -379,7 +379,7 @@ class SessionTest extends \Test\TestCase {
 			->method('sleepDelay')
 			->with('192.168.0.1');
 		$this->throttler
-			->expects($this->once())
+			->expects($this->any())
 			->method('getDelay')
 			->with('192.168.0.1')
 			->willReturn(0);
