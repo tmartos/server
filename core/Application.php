@@ -70,7 +70,8 @@ class Application extends App {
 				$c->query('DefaultEmailAddress'),
 				$c->query('IsEncryptionEnabled'),
 				$c->query('Mailer'),
-				$c->query('TimeFactory')
+				$c->query('TimeFactory'),
+				$c->query('Crypto')
 			);
 		});
 		$container->registerService('UserController', function(SimpleContainer $c) {
@@ -146,6 +147,9 @@ class Application extends App {
 		});
 		$container->registerService('Mailer', function(SimpleContainer $c) {
 			return $c->query('ServerContainer')->getMailer();
+		});
+		$container->registerService('Crypto', function(SimpleContainer $c) {
+			return $c->query('ServerContainer')->getCrypto();
 		});
 		$container->registerService('TimeFactory', function(SimpleContainer $c) {
 			return new TimeFactory();

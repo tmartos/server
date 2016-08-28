@@ -31,6 +31,7 @@ use OCP\IURLGenerator;
 use OCP\IUser;
 use OCP\IUserManager;
 use OCP\Mail\IMailer;
+use OCP\Security\ICrypto;
 use OCP\Security\ISecureRandom;
 use PHPUnit_Framework_MockObject_MockObject;
 
@@ -63,9 +64,10 @@ class LostControllerTest extends \PHPUnit_Framework_TestCase {
 	private $timeFactory;
 	/** @var IRequest */
 	private $request;
+	/** @var ICrypto */
+	private $crypto;
 
 	protected function setUp() {
-
 		$this->existingUser = $this->getMockBuilder('OCP\IUser')
 				->disableOriginalConstructor()->getMock();
 
@@ -98,6 +100,8 @@ class LostControllerTest extends \PHPUnit_Framework_TestCase {
 			->disableOriginalConstructor()->getMock();
 		$this->request = $this->getMockBuilder('OCP\IRequest')
 			->disableOriginalConstructor()->getMock();
+		$this->crypto = $this->getMockBuilder('OCP\Security\ICrypto')
+			->disableOriginalConstructor()->getMock();
 		$this->lostController = new LostController(
 			'Core',
 			$this->request,
@@ -110,23 +114,55 @@ class LostControllerTest extends \PHPUnit_Framework_TestCase {
 			'lostpassword-noreply@localhost',
 			true,
 			$this->mailer,
-			$this->timeFactory
+			$this->timeFactory,
+			$this->crypto
 		);
 	}
 
-	public function testResetFormInvalidToken() {
-		$userId = 'admin';
+	public function testResetFormWithNotExistingUser() {
+		$userId = 'NotExistingUser';
 		$token = 'MySecretToken';
-		$response = $this->lostController->resetform($token, $userId);
-		$expectedResponse = new TemplateResponse('core',
+		$this->userManager
+			->expects($this->once())
+			->method('get')
+			->with('NotExistingUser')
+			->willReturn(null);
+
+		$expectedResponse = new TemplateResponse(
+			'core',
 			'error',
 			[
 				'errors' => [
 					['error' => 'Couldn\'t reset password because the token is invalid'],
 				]
 			],
-			'guest');
-		$this->assertEquals($expectedResponse, $response);
+			'guest'
+		);
+		$this->assertEquals($expectedResponse, $this->lostController->resetform($token, $userId));
+	}
+
+	public function testResetFormInvalidTokenFormatting() {
+		$userId = 'admin';
+		$token = 'MySecretToken';
+		$user = $this->getMockBuilder('\OCP\IUser')->getMock();
+
+		$this->userManager
+			->expects($this->once())
+			->method('get')
+			->with('admin')
+			->willReturn($user);
+
+		$expectedResponse = new TemplateResponse(
+			'core',
+			'error',
+			[
+				'errors' => [
+					['error' => 'Couldn\'t reset password because the token is invalid'],
+				]
+			],
+			'guest'
+		);
+		$this->assertEquals($expectedResponse, $this->lostController->resetform($token, $userId));
 	}
 
 	public function testResetFormInvalidTokenMatch() {
