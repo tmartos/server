@@ -219,7 +219,6 @@ $(document).ready(function () {
 			// Ajax foo
 			$.post(OC.generateUrl('/settings/personal/changepassword'), post, function (data) {
 				if (data.status === "success") {
-					$(".password-loading").remove();
 					$("#passwordbutton").after("<span class='checkmark icon icon-checkmark password-state'></span>");
 					removeloader();
 					$(".personal-show-label").show();
@@ -240,6 +239,7 @@ $(document).ready(function () {
 						);
 					}
 				}
+				$(".password-loading").remove();
 				$("#passwordbutton").removeAttr('disabled');
 			});
 			return false;
