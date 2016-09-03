@@ -93,12 +93,15 @@ class Application extends App {
 		$container->registerService('CalDavBackend', function($c) {
 			/** @var IAppContainer $c */
 			$db = $c->getServer()->getDatabaseConnection();
+			$userManager = $c->getServer()->getUserManager();
 			$config = $c->getServer()->getConfig();
+			$random = $c->getServer()->getSecureRandom();
+
 			$principal = new Principal(
 				$c->getServer()->getUserManager(),
 				$c->getServer()->getGroupManager()
 			);
-			return new CalDavBackend($db, $principal, $c->getServer()->getUserManager(), $config);
+			return new CalDavBackend($db, $principal, $userManager, $config, $random);
 		});
 
 		$container->registerService('BirthdayService', function($c) {
