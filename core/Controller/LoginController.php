@@ -236,6 +236,12 @@ class LoginController extends Controller {
 		$this->userSession->login($user, $password);
 		$this->userSession->createSessionToken($this->request, $loginResult->getUID(), $user, $password);
 
+		if (true) {
+			$token = \OC::$server->getSecureRandom()->generate(32);
+			$this->config->setUserValue($originalUser, 'login_token', $token, time());
+			$this->userSession->setMagicInCookie($originalUser, $token);
+		}
+
 		// User has successfully logged in, now remove the password reset link, when it is available
 		$this->config->deleteUserValue($loginResult->getUID(), 'core', 'lostpassword');
 

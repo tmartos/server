@@ -691,15 +691,15 @@ class Session implements IUserSession, Emitter {
 		}
 
 		// get stored tokens
-		$tokens = OC::$server->getConfig()->getUserKeys($uid, 'login_token');
+		$tokens = $this->config->getUserKeys($uid, 'login_token');
 		// test cookies token against stored tokens
 		if (!in_array($currentToken, $tokens, true)) {
 			return false;
 		}
 		// replace successfully used token with a new one
-		OC::$server->getConfig()->deleteUserValue($uid, 'login_token', $currentToken);
+		$this->config->deleteUserValue($uid, 'login_token', $currentToken);
 		$newToken = OC::$server->getSecureRandom()->generate(32);
-		OC::$server->getConfig()->setUserValue($uid, 'login_token', $newToken, time());
+		$this->config->setUserValue($uid, 'login_token', $newToken, time());
 		$this->setMagicInCookie($user->getUID(), $newToken);
 
 		//login
@@ -736,9 +736,9 @@ class Session implements IUserSession, Emitter {
 	public function setMagicInCookie($username, $token) {
 		$secureCookie = OC::$server->getRequest()->getServerProtocol() === 'https';
 		$expires = time() + OC::$server->getConfig()->getSystemValue('remember_login_cookie_lifetime', 60 * 60 * 24 * 15);
-		setcookie('oc_username', $username, $expires, OC::$WEBROOT, '', $secureCookie, true);
-		setcookie('oc_token', $token, $expires, OC::$WEBROOT, '', $secureCookie, true);
-		setcookie('oc_remember_login', '1', $expires, OC::$WEBROOT, '', $secureCookie, true);
+		setcookie('nc_username', $username, $expires, OC::$WEBROOT, '', $secureCookie, true);
+		setcookie('nc_token', $token, $expires, OC::$WEBROOT, '', $secureCookie, true);
+		setcookie('nc_remember_login', '1', $expires, OC::$WEBROOT, '', $secureCookie, true);
 	}
 
 	/**
@@ -748,17 +748,17 @@ class Session implements IUserSession, Emitter {
 		//TODO: DI for cookies and IRequest
 		$secureCookie = OC::$server->getRequest()->getServerProtocol() === 'https';
 
-		unset($_COOKIE['oc_username']); //TODO: DI
-		unset($_COOKIE['oc_token']);
-		unset($_COOKIE['oc_remember_login']);
-		setcookie('oc_username', '', time() - 3600, OC::$WEBROOT, '', $secureCookie, true);
-		setcookie('oc_token', '', time() - 3600, OC::$WEBROOT, '', $secureCookie, true);
-		setcookie('oc_remember_login', '', time() - 3600, OC::$WEBROOT, '', $secureCookie, true);
+		unset($_COOKIE['nc_username']); //TODO: DI
+		unset($_COOKIE['nc_token']);
+		unset($_COOKIE['nc_remember_login']);
+		setcookie('nc_username', '', time() - 3600, OC::$WEBROOT, '', $secureCookie, true);
+		setcookie('nc_token', '', time() - 3600, OC::$WEBROOT, '', $secureCookie, true);
+		setcookie('nc_remember_login', '', time() - 3600, OC::$WEBROOT, '', $secureCookie, true);
 		// old cookies might be stored under /webroot/ instead of /webroot
 		// and Firefox doesn't like it!
-		setcookie('oc_username', '', time() - 3600, OC::$WEBROOT . '/', '', $secureCookie, true);
-		setcookie('oc_token', '', time() - 3600, OC::$WEBROOT . '/', '', $secureCookie, true);
-		setcookie('oc_remember_login', '', time() - 3600, OC::$WEBROOT . '/', '', $secureCookie, true);
+		setcookie('nc_username', '', time() - 3600, OC::$WEBROOT . '/', '', $secureCookie, true);
+		setcookie('nc_token', '', time() - 3600, OC::$WEBROOT . '/', '', $secureCookie, true);
+		setcookie('nc_remember_login', '', time() - 3600, OC::$WEBROOT . '/', '', $secureCookie, true);
 	}
 
 	/**
@@ -777,5 +777,6 @@ class Session implements IUserSession, Emitter {
 			// Nothing to do
 		}
 	}
+
 
 }

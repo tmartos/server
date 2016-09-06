@@ -1031,6 +1031,9 @@ class OC {
 		if ($userSession->tryTokenLogin($request)) {
 			return true;
 		}
+		if ($userSession->loginWithCookie($_COOKIE['nc_username'], $_COOKIE['nc_token'])) {
+			return true;
+		}
 		if ($userSession->tryBasicAuthLogin($request, \OC::$server->getBruteForceThrottler())) {
 			return true;
 		}
