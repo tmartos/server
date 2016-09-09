@@ -13,6 +13,9 @@ namespace Tests\Settings\Controller;
 use \OC\Settings\Application;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
+use OCP\IAvatar;
+use OCP\IAvatarManager;
+use OCP\IUser;
 
 /**
  * @group DB
@@ -60,11 +63,11 @@ class UsersControllerTest extends \Test\TestCase {
 		/*
 		 * Set default avtar behaviour for whole testsuite
 		 */
-		$this->container['OCP\\IAvatarManager'] = $this->getMock('OCP\IAvatarManager');
+		$this->container['OCP\\IAvatarManager'] = $this->createMock(IAvatarManager::class);
 
-		$avatarExists = $this->getMock('OCP\IAvatar');
+		$avatarExists = $this->createMock(IAvatar::class);
 		$avatarExists->method('exists')->willReturn(true);
-		$avatarNotExists = $this->getMock('OCP\IAvatar');
+		$avatarNotExists = $this->createMock(IAvatar::class);
 		$avatarNotExists->method('exists')->willReturn(false);
 		$this->container['OCP\\IAvatarManager']
 			->method('getAvatar')
@@ -112,6 +115,9 @@ class UsersControllerTest extends \Test\TestCase {
 			->expects($this->once())
 			->method('getBackendClassName')
 			->will($this->returnValue('OC_User_Database'));
+		$foo->expects($this->any())
+			->method('isEnabled')
+			->willReturn(true);
 		$admin = $this->getMockBuilder('\OC\User\User')
 			->disableOriginalConstructor()->getMock();
 		$admin
@@ -142,6 +148,9 @@ class UsersControllerTest extends \Test\TestCase {
 			->expects($this->once())
 			->method('getBackendClassName')
 			->will($this->returnValue('\Test\Util\User\Dummy'));
+		$admin->expects($this->any())
+			->method('isEnabled')
+			->willReturn(true);
 		$bar = $this->getMockBuilder('\OC\User\User')
 			->disableOriginalConstructor()->getMock();
 		$bar
@@ -170,6 +179,9 @@ class UsersControllerTest extends \Test\TestCase {
 			->expects($this->once())
 			->method('getBackendClassName')
 			->will($this->returnValue('\Test\Util\User\Dummy'));
+		$bar->expects($this->any())
+			->method('isEnabled')
+			->willReturn(true);
 
 		$this->container['GroupManager']
 			->expects($this->once())
@@ -233,6 +245,7 @@ class UsersControllerTest extends \Test\TestCase {
 					'email' => 'foo@bar.com',
 					'isRestoreDisabled' => false,
 					'isAvatarAvailable' => true,
+					'isEnabled' => true,
 				),
 				1 => array(
 					'name' => 'admin',
@@ -246,6 +259,7 @@ class UsersControllerTest extends \Test\TestCase {
 					'email' => 'admin@bar.com',
 					'isRestoreDisabled' => false,
 					'isAvatarAvailable' => false,
+					'isEnabled' => true,
 				),
 				2 => array(
 					'name' => 'bar',
@@ -259,6 +273,7 @@ class UsersControllerTest extends \Test\TestCase {
 					'email' => 'bar@dummy.com',
 					'isRestoreDisabled' => false,
 					'isAvatarAvailable' => true,
+					'isEnabled' => true,
 				),
 			)
 		);
@@ -304,6 +319,9 @@ class UsersControllerTest extends \Test\TestCase {
 			->expects($this->once())
 			->method('getBackendClassName')
 			->will($this->returnValue('OC_User_Database'));
+		$foo->expects($this->any())
+			->method('isEnabled')
+			->willReturn(true);
 		$admin = $this->getMockBuilder('\OC\User\User')
 			->disableOriginalConstructor()->getMock();
 		$admin
@@ -334,6 +352,9 @@ class UsersControllerTest extends \Test\TestCase {
 			->expects($this->once())
 			->method('getBackendClassName')
 			->will($this->returnValue('\Test\Util\User\Dummy'));
+		$admin->expects($this->any())
+			->method('isEnabled')
+			->willReturn(true);
 		$bar = $this->getMockBuilder('\OC\User\User')
 			->disableOriginalConstructor()->getMock();
 		$bar
@@ -362,6 +383,9 @@ class UsersControllerTest extends \Test\TestCase {
 			->expects($this->once())
 			->method('getBackendClassName')
 			->will($this->returnValue('\Test\Util\User\Dummy'));
+		$bar->expects($this->any())
+			->method('isEnabled')
+			->willReturn(true);
 
 		$this->container['GroupManager']
 			->expects($this->at(2))
@@ -439,6 +463,7 @@ class UsersControllerTest extends \Test\TestCase {
 					'email' => 'bar@dummy.com',
 					'isRestoreDisabled' => false,
 					'isAvatarAvailable' => true,
+					'isEnabled' => true,
 				],
 				1=> [
 					'name' => 'foo',
@@ -452,6 +477,7 @@ class UsersControllerTest extends \Test\TestCase {
 					'email' => 'foo@bar.com',
 					'isRestoreDisabled' => false,
 					'isAvatarAvailable' => true,
+					'isEnabled' => true,
 				],
 				2 => [
 					'name' => 'admin',
@@ -465,6 +491,7 @@ class UsersControllerTest extends \Test\TestCase {
 					'email' => 'admin@bar.com',
 					'isRestoreDisabled' => false,
 					'isAvatarAvailable' => false,
+					'isEnabled' => true,
 				],
 			]
 		);
@@ -508,6 +535,9 @@ class UsersControllerTest extends \Test\TestCase {
 			->expects($this->once())
 			->method('getBackendClassName')
 			->will($this->returnValue('OC_User_Database'));
+		$foo->expects($this->any())
+			->method('isEnabled')
+			->willReturn(true);
 		$admin = $this->getMockBuilder('\OC\User\User')
 			->disableOriginalConstructor()->getMock();
 		$admin
@@ -538,6 +568,9 @@ class UsersControllerTest extends \Test\TestCase {
 			->expects($this->once())
 			->method('getBackendClassName')
 			->will($this->returnValue('\Test\Util\User\Dummy'));
+		$admin->expects($this->any())
+			->method('isEnabled')
+			->willReturn(true);
 		$bar = $this->getMockBuilder('\OC\User\User')
 			->disableOriginalConstructor()->getMock();
 		$bar
@@ -566,6 +599,9 @@ class UsersControllerTest extends \Test\TestCase {
 			->expects($this->once())
 			->method('getBackendClassName')
 			->will($this->returnValue('\Test\Util\User\Dummy'));
+		$bar->expects($this->any())
+			->method('isEnabled')
+			->willReturn(true);
 
 		$this->container['UserManager']
 			->expects($this->once())
@@ -602,6 +638,7 @@ class UsersControllerTest extends \Test\TestCase {
 					'email' => 'foo@bar.com',
 					'isRestoreDisabled' => false,
 					'isAvatarAvailable' => true,
+					'isEnabled' => true,
 				),
 				1 => array(
 					'name' => 'admin',
@@ -615,6 +652,7 @@ class UsersControllerTest extends \Test\TestCase {
 					'email' => 'admin@bar.com',
 					'isRestoreDisabled' => false,
 					'isAvatarAvailable' => false,
+					'isEnabled' => true,
 				),
 				2 => array(
 					'name' => 'bar',
@@ -628,6 +666,7 @@ class UsersControllerTest extends \Test\TestCase {
 					'email' => 'bar@dummy.com',
 					'isRestoreDisabled' => false,
 					'isAvatarAvailable' => true,
+					'isEnabled' => true,
 				),
 			)
 		);
@@ -666,6 +705,10 @@ class UsersControllerTest extends \Test\TestCase {
 			->expects($this->once())
 			->method('getBackendClassName')
 			->will($this->returnValue('OC_User_Database'));
+		$user->expects($this->any())
+			->method('isEnabled')
+			->willReturn(true);
+
 		$this->container['UserManager']
 			->expects($this->once())
 			->method('getBackends')
@@ -704,6 +747,7 @@ class UsersControllerTest extends \Test\TestCase {
 					'email' => null,
 					'isRestoreDisabled' => false,
 					'isAvatarAvailable' => true,
+					'isEnabled' => true,
 				)
 			)
 		);
@@ -744,6 +788,9 @@ class UsersControllerTest extends \Test\TestCase {
 			->expects($this->once())
 			->method('getBackendClassName')
 			->will($this->returnValue('bar'));
+		$user->expects($this->any())
+			->method('isEnabled')
+			->willReturn(true);
 
 		$this->container['UserManager']
 			->expects($this->once())
@@ -776,6 +823,7 @@ class UsersControllerTest extends \Test\TestCase {
 				'email' => null,
 				'isRestoreDisabled' => false,
 				'isAvatarAvailable' => true,
+				'isEnabled' => true,
 			),
 			Http::STATUS_CREATED
 		);
@@ -807,6 +855,9 @@ class UsersControllerTest extends \Test\TestCase {
 			->expects($this->once())
 			->method('getBackendClassName')
 			->will($this->returnValue('bar'));
+		$newUser->expects($this->any())
+			->method('isEnabled')
+			->willReturn(true);
 		$user = $this->getMockBuilder('\OC\User\User')
 			->disableOriginalConstructor()->getMock();
 		$subGroup1 = $this->getMockBuilder('\OCP\IGroup')
@@ -865,6 +916,7 @@ class UsersControllerTest extends \Test\TestCase {
 				'email' => null,
 				'isRestoreDisabled' => false,
 				'isAvatarAvailable' => true,
+				'isEnabled' => true,
 			),
 			Http::STATUS_CREATED
 		);
@@ -890,6 +942,9 @@ class UsersControllerTest extends \Test\TestCase {
 			->expects($this->once())
 			->method('getBackendClassName')
 			->will($this->returnValue('bar'));
+		$user->expects($this->any())
+			->method('isEnabled')
+			->willReturn(true);
 		$existingGroup = $this->getMockBuilder('\OCP\IGroup')
 			->disableOriginalConstructor()->getMock();
 		$existingGroup
@@ -948,6 +1003,7 @@ class UsersControllerTest extends \Test\TestCase {
 				'email' => null,
 				'isRestoreDisabled' => false,
 				'isAvatarAvailable' => true,
+				'isEnabled' => true,
 			),
 			Http::STATUS_CREATED
 		);
@@ -980,6 +1036,9 @@ class UsersControllerTest extends \Test\TestCase {
 			->expects($this->once())
 			->method('getBackendClassName')
 			->will($this->returnValue('bar'));
+		$newUser->expects($this->any())
+			->method('isEnabled')
+			->willReturn(true);
 		$subGroup1 = $this->getMockBuilder('\OCP\IGroup')
 			->disableOriginalConstructor()->getMock();
 		$subGroup1
@@ -1044,6 +1103,7 @@ class UsersControllerTest extends \Test\TestCase {
 				'email' => null,
 				'isRestoreDisabled' => false,
 				'isAvatarAvailable' => true,
+				'isEnabled' => true,
 			),
 			Http::STATUS_CREATED
 		);
@@ -1507,7 +1567,8 @@ class UsersControllerTest extends \Test\TestCase {
 	}
 
 	private function mockUser($userId = 'foo', $displayName = 'M. Foo',
-							  $lastLogin = 500, $home = '/home/foo', $backend = 'OC_User_Database') {
+							  $lastLogin = 500, $home = '/home/foo',
+							  $backend = 'OC_User_Database', $enabled = true) {
 		$user = $this->getMockBuilder('\OC\User\User')
 			->disableOriginalConstructor()->getMock();
 		$user
@@ -1528,6 +1589,9 @@ class UsersControllerTest extends \Test\TestCase {
 			->expects($this->once())
 			->method('getBackendClassName')
 			->will($this->returnValue($backend));
+		$user->expects($this->any())
+			->method('isEnabled')
+			->willReturn($enabled);
 
 		$result = [
 			'name' => $userId,
@@ -1541,6 +1605,7 @@ class UsersControllerTest extends \Test\TestCase {
 			'email' => null,
 			'isRestoreDisabled' => false,
 			'isAvatarAvailable' => true,
+			'isEnabled' => $enabled,
 		];
 
 		return [$user, $result];
@@ -1861,7 +1926,7 @@ class UsersControllerTest extends \Test\TestCase {
 	}
 
 	public function testSetDisplayNameNull() {
-		$user = $this->getMock('\OCP\IUser');
+		$user = $this->createMock(IUser::class);
 		$user->method('getUID')->willReturn('userName');
 
 		$this->container['UserSession']
@@ -1885,33 +1950,33 @@ class UsersControllerTest extends \Test\TestCase {
 	public function dataSetDisplayName() {
 		$data = [];
 
-		$user1 = $this->getMock('\OCP\IUser');
+		$user1 = $this->createMock(IUser::class);
 		$user1->method('getUID')->willReturn('user1');
 		$user1->method('canChangeDisplayName')->willReturn(true);
 		$data[] = [$user1, $user1, false, false, true];
 
-		$user1 = $this->getMock('\OCP\IUser');
+		$user1 = $this->createMock(IUser::class);
 		$user1->method('getUID')->willReturn('user1');
 		$user1->method('canChangeDisplayName')->willReturn(false);
 		$data[] = [$user1, $user1, false, false, false];
 
-		$user1 = $this->getMock('\OCP\IUser');
+		$user1 = $this->createMock(IUser::class);
 		$user1->method('getUID')->willReturn('user1');
-		$user2 = $this->getMock('\OCP\IUser');
+		$user2 = $this->createMock(IUser::class);
 		$user2->method('getUID')->willReturn('user2');
 		$user2->method('canChangeDisplayName')->willReturn(true);
 		$data[] = [$user1, $user2, false, false, false];
 
-		$user1 = $this->getMock('\OCP\IUser');
+		$user1 = $this->createMock(IUser::class);
 		$user1->method('getUID')->willReturn('user1');
-		$user2 = $this->getMock('\OCP\IUser');
+		$user2 = $this->createMock(IUser::class);
 		$user2->method('getUID')->willReturn('user2');
 		$user2->method('canChangeDisplayName')->willReturn(true);
 		$data[] = [$user1, $user2, true, false, true];
 
-		$user1 = $this->getMock('\OCP\IUser');
+		$user1 = $this->createMock(IUser::class);
 		$user1->method('getUID')->willReturn('user1');
-		$user2 = $this->getMock('\OCP\IUser');
+		$user2 = $this->createMock(IUser::class);
 		$user2->method('getUID')->willReturn('user2');
 		$user2->method('canChangeDisplayName')->willReturn(true);
 		$data[] = [$user1, $user2, false, true, true];
@@ -1981,7 +2046,7 @@ class UsersControllerTest extends \Test\TestCase {
 	}
 
 	public function testSetDisplayNameFails() {
-		$user = $this->getMock('\OCP\IUser');
+		$user = $this->createMock(IUser::class);
 		$user->method('canChangeDisplayname')->willReturn(true);
 		$user->method('getUID')->willReturn('user');
 		$user->expects($this->once())
