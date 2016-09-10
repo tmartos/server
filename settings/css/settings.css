@@ -385,16 +385,22 @@ span.version {
 	height: 100%;
 	display: flex;
 	flex-wrap: wrap;
+	align-content: flex-start;
 }
 .section {
 	position: relative;
-	flex-basis: 300px;
+	flex: 1 0 330px;
+    margin: 0;
+    border-color: #eee;
+    border-width: 0 1px 1px 0;
+    border-style: solid;
 }
 .section.apps-experimental {
-	flex-basis: 100%;
+	flex-basis: 90%;
 }
 .section h2.app-name {
 	margin-bottom: 8px;
+	display: inline;
 }
 .followupsection {
 	display: block;
