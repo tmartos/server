@@ -35,6 +35,7 @@ use OC\Repair\AvatarPermissions;
 use OC\Repair\CleanTags;
 use OC\Repair\Collation;
 use OC\Repair\DropOldJobs;
+use OC\Repair\NC11\MoveAvatars;
 use OC\Repair\OldGroupMembershipShares;
 use OC\Repair\RemoveGetETagEntries;
 use OC\Repair\RemoveOldShares;
@@ -146,6 +147,11 @@ class Repair implements IOutput{
 				\OC::$server->getDatabaseConnection(),
 				\OC::$server->getUserManager(),
 				\OC::$server->getGroupManager()
+			),
+			new MoveAvatars(
+				\OC::$server->getUserManager(),
+				\OC::$server->getRootFolder(),
+				\OC::$server->getAppDataDir('avatar')
 			),
 		];
 	}
